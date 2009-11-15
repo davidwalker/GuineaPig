@@ -1,0 +1,11 @@
+﻿http://xunitpatterns.com/Creation%20Method.html
+
+
+return f.Build(new Book())
+		.FillPrimitives()
+		.Set(b => b.ISBN = generate())
+		.GetEntity();
+
+
+
+Named ctor functions. - ability to register multple factory functions per type and name them. maybe not.

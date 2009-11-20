@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -28,46 +29,89 @@ namespace GuineaPig
 			return this;
 		}
 
+		public PopulationContext<T> Set(Expression<Func<T, object>> exp, object value)
+		{
+			var setter = CreateSetter(exp);
+			setter.SetValue(Entity, value);
+			return this;
+		}
+
 		public PopulationContext<T> Fill(Expression<Func<T, object>> exp)
 		{
 			var setter = CreateSetter(exp);
 
-			Func<object> factoryFunction;
-			if (factory.ValueObjects.TryGetValueProvider(setter, out factoryFunction))
-			{
-				setter.SetValue(entity, factoryFunction());
-				return this;
-			}
-
-			var method = typeof(Factory)
-								.GetMethod("CreateNew", new Type[0])
-								.MakeGenericMethod(setter.PropertyType);
 			try
 			{
-				var value = method.Invoke(factory, null);
+				var factoryFunction = GetValueObjectFactoryFunction(setter)
+										?? GetEntityFactoryFunction(setter);
+
+				var value = factoryFunction();
 				if (value != null)
-				{
 					setter.SetValue(entity, value);
-					return this;
-				}
 			}
 			catch (Exception)
 			{
-				throw new UnrecognisedTypeException("Unable to fill a valuefor type: " + setter.PropertyType);
+				throw new UnrecognisedTypeException("Unable to fill a value for type: " + setter.PropertyType);
 			}
 
 			return this;
 		}
 
+		private Func<object> GetEntityFactoryFunction(IPropertySetter setter)
+		{
+			var method = typeof(Factory)
+				.GetMethod("Create", new Type[0])
+				.MakeGenericMethod(setter.PropertyType);
+			return () => method.Invoke(factory, null);
+		}
+
+		private Func<object> GetValueObjectFactoryFunction(IPropertySetter setter)
+		{
+			Func<object> factoryFunction;
+			if (!factory.ValueObjects.TryGetValueProvider(setter, out factoryFunction))
+			{
+				factoryFunction = null;
+			}
+			return factoryFunction;
+		}
+
 		public PopulationContext<T> FillUninitialisedValueObjects()
 		{
-			foreach (var setter in GetSetters())
+			foreach (var setter in GetSetters().Where(s => s.HasPublicSetter))
 			{
-				Func<object> factoryFunction;
-				if (factory.ValueObjects.TryGetValueProvider(setter, out factoryFunction))
+				if(!IsPropertyDefaultValue(entity, setter))
+					continue;
+
+				var factoryFunction = GetValueObjectFactoryFunction(setter);
+				if (factoryFunction != null)
 					setter.SetValue(entity, factoryFunction());
 			}
 			return this;
+		}
+
+		private bool IsPropertyDefaultValue(T instance, IPropertySetter setter)
+		{
+			object defaultValue = null;
+			DefaultValues.TryGetValue(setter.PropertyType, out defaultValue);
+			return object.Equals(setter.GetValue(instance), defaultValue);
+		}
+
+		// TODO: Move this so it lives nearer the value object factory functions.
+		protected Dictionary<Type, object> DefaultValues
+		{
+			get
+			{
+				return new Dictionary<Type, object>
+				{
+					{typeof(string), null},
+					{typeof(int), 0},
+					{typeof(long), 0L},
+					{typeof(float) , 0f},
+					{typeof(decimal), 0m},
+					{typeof(double), 0d},
+					{typeof(DateTime), new DateTime()}
+				};
+			}
 		}
 
 		private IEnumerable<IPropertySetter> GetSetters()
@@ -82,7 +126,7 @@ namespace GuineaPig
 		private IPropertySetter CreateSetter(Expression<Func<T, object>> expression)
 		{
 			var name = GetPropertyName(expression);
-			var propertyInfo = typeof (T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+			var propertyInfo = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 			return new PropertyPropertySetter(propertyInfo);
 		}
 

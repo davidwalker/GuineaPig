@@ -14,7 +14,7 @@ namespace GuineaPig.Tests
 		public void CreateNew_ShouldCreateInstanceOfTypeParameter()
 		{
 			var factory = new Factory();
-			var entity = factory.CreateNew<SimpleTestEntity>();
+			var entity = factory.Create<SimpleTestEntity>();
 
 			Assert.NotNull(entity);
 			Assert.IsAssignableFrom<SimpleTestEntity>(entity);
@@ -27,7 +27,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 			factory.Entities.RegisterFactoryFunction(() => expectedEntity);
 
-			var entity = factory.CreateNew<SimpleTestEntity>();
+			var entity = factory.Create<SimpleTestEntity>();
 
 			Assert.Same(expectedEntity, entity);
 		}
@@ -38,7 +38,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 			factory.Entities.RegisterFactoryFunction(() => new SimpleTestEntityNoDefaultCtor("a"));
 
-			var entity = factory.CreateNew<SimpleTestEntityNoDefaultCtor>();
+			var entity = factory.Create<SimpleTestEntityNoDefaultCtor>();
 			Assert.NotNull(entity);
 		}
 
@@ -46,7 +46,7 @@ namespace GuineaPig.Tests
 		public void CreateNew_ShouldInvokePassedCallbackWithNewEntity()
 		{
 			var factory = new Factory();
-			var entity = factory.CreateNew<TestEntity>(e => e.Name = "Explicit Value");
+			var entity = factory.Create<TestEntity>(e => e.Name = "Explicit Value");
 
 			Assert.Equal("Explicit Value", entity.Name);
 		}
@@ -57,7 +57,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 			factory.Entities.RegisterFactoryFunction(() => new TestEntity { Name = "Initial" });
 
-			var entity = factory.CreateNew<TestEntity>(e => e.Name = "Explicit Value");
+			var entity = factory.Create<TestEntity>(e => e.Name = "Explicit Value");
 
 			Assert.Equal("Explicit Value", entity.Name);
 		}
@@ -68,7 +68,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 			factory.ValueObjects.RegisterFactoryFunction(() => "Expected");
 
-			var entity = factory.CreateNew<TestEntity>();
+			var entity = factory.Create<TestEntity>();
 
 			Assert.Equal("Expected", entity.Name);
 		}
@@ -80,7 +80,7 @@ namespace GuineaPig.Tests
 			factory.Entities.RegisterFactoryFunction(() => new TestEntity { Name = "Expected" });
 			factory.ValueObjects.RegisterFactoryFunction(() => "Not Expected");
 
-			var entity = factory.CreateNew<TestEntity>();
+			var entity = factory.Create<TestEntity>();
 
 			Assert.Equal("Expected", entity.Name);
 		}
@@ -92,7 +92,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 			factory.Entities.RegisterFactoryFunction<TestEntity>((f) => { actual = f; return new TestEntity(); });
 
-			factory.CreateNew<TestEntity>();
+			factory.Create<TestEntity>();
 			Assert.Same(factory, actual);
 		}
 
@@ -102,7 +102,7 @@ namespace GuineaPig.Tests
 			var factory = new Factory();
 
 			var exception = Assert.Throws<MissingMethodException>(
-							() => factory.CreateNew<SimpleTestEntityNoDefaultCtor>());
+							() => factory.Create<SimpleTestEntityNoDefaultCtor>());
 
 			var expectedMessage = string.Format(
 				"Unable to create instance of {0} because the requested type does not define a parameterless constructor and no custom factory method was registered.", 

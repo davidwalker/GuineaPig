@@ -9,7 +9,7 @@ namespace GuineaPig.Tests.Integration.BookShopSample.Tests
 		[Fact]
 		public void ExcerciseProductFactory()
 		{
-			var book = Factory.CreateNew<Book>(b => b.Title = "Test Title");
+			var book = Factory.Create<Book>(b => b.Title = "Test Title");
 
 			Assert.NotNull(book);
 			Assert.Equal("Test Title", book.Title);

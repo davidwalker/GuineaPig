@@ -47,7 +47,7 @@ namespace GuineaPig.Tests
 		}
 
 		[Fact]
-		public void SetAllValueObjects_ShouldSetAllValueObjectProperties()
+		public void FillUninitialisedValueObjects_ShouldSetAllValueObjectProperties()
 		{
 			var entity = new SimpleTestEntity();
 			var factory = new Factory();
@@ -65,7 +65,7 @@ namespace GuineaPig.Tests
 		}
 
 		[Fact]
-		public void SetAllValueObjects_ShouldSetAllValueObjectFields()
+		public void FillUninitialisedValueObjects_ShouldSetAllValueObjectFields()
 		{
 			var entity = new SimpleTestEntityWithFields();
 			var factory = new Factory();
@@ -82,6 +82,68 @@ namespace GuineaPig.Tests
 			Assert.NotNull(entity.StringField);
 		}
 
+		[Fact]
+		public void FillUninitialisedValueObjects_ShouldNotOverwritePropertiesWithAValue()
+		{
+			decimal expectedNumber = 1235.6789m;
+			DateTime expectedDate = new DateTime(2001, 1, 6);
+			var entity = new SimpleTestEntityWithFields
+							{
+								IntField = (int)expectedNumber,
+								LongField = (long)expectedNumber,
+								DecimalField = expectedNumber,
+								FloatField = (float)expectedNumber,
+								DoubleField = (double)expectedNumber,
+								DateField = expectedDate
+							};
+			var factory = new Factory();
+
+			factory.Build(entity).FillUninitialisedValueObjects();
+
+			Assert.Equal((int)expectedNumber, entity.IntField);
+			Assert.Equal((long)expectedNumber, entity.LongField);
+			Assert.Equal(expectedNumber, entity.DecimalField);
+			Assert.Equal((float)expectedNumber, entity.FloatField);
+			Assert.Equal((double)expectedNumber, entity.DoubleField);
+			Assert.Equal(expectedDate, entity.DateField);
+		}
+
+		[Fact]
+		public void FillUninitialisedValueObjects_ShouldNotSetPropertiesWithAPrivateSetter()
+		{
+			var entity = new EntityWithPrivateProperty();
+			var factory = new Factory();
+
+			factory.Build(entity).FillUninitialisedValueObjects();
+
+			Assert.Null(entity.PrivateSetterProperty);
+		}
+
+		[Fact]
+		public void Fill_ShouldSetPropertyWithPrivateSetter()
+		{
+			var entity = new EntityWithPrivateProperty();
+			var factory = new Factory();
+
+			factory.Build(entity).Fill(e => e.PrivateSetterProperty);
+
+			Assert.NotEqual("", entity.PrivateSetterProperty);
+			Assert.NotEqual(null, entity.PrivateSetterProperty);
+		}
+
+		[Fact]
+		public void Set_ShouldSetPropertyWithPrivateSetter()
+		{
+			var entity = new EntityWithPrivateProperty();
+			var factory = new Factory();
+
+			factory.Build(entity).Set(e => e.PrivateSetterProperty, "expected");
+
+			Assert.Equal("expected", entity.PrivateSetterProperty);
+		}
+
 
 	}
+
+
 }

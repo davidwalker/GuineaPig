@@ -17,7 +17,7 @@ namespace GuineaPig.Tests.Integration
 		public FactoryTests_PropertySetting_WhenCreatedWithDefaultCtor()
 		{
 			factory = new Factory();
-			entity = factory.CreateNew<SimpleTestEntity>();
+			entity = factory.Create<SimpleTestEntity>();
 		}
 
 		[Fact]

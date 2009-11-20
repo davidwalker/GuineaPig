@@ -14,14 +14,14 @@ public class GunieaPigExamples
 	{
 		// Create entity and auto populates primitive properties
 		var factory = new GuineaPig.Factory();
-		var book = factory.CreateNew<Book>();
+		var book = factory.Create<Book>();
 	}
 
 	public void CustomiseInstance()
 	{
 		// Customise the instance using a lambda
 		var factory = new GuineaPig.Factory();
-		var book = factory.CreateNew<Book>(b => b.Title = "Test Title");
+		var book = factory.Create<Book>(b => b.Title = "Test Title");
 	}
 
 	public void ChangeHowPrimitivesAreGenerated()
@@ -29,7 +29,7 @@ public class GunieaPigExamples
 		// Change the strategy for populating primitives.
 		var factory = new GuineaPig.Factory();
 		factory.ValueObjects.RegisterFactories(new RandomPrimativeGenerator());
-		var book = factory.CreateNew<Book>();
+		var book = factory.Create<Book>();
 	}
 
 	public void CustomValueType()
@@ -40,7 +40,7 @@ public class GunieaPigExamples
 		factory.ValueObjects.RegisterFactoryFunction(
 			() => new Money(21, "USD"));
 
-		var book = factory.CreateNew<Book>();
+		var book = factory.Create<Book>();
 	}
 
 	public void CustomEntity()
@@ -50,7 +50,7 @@ public class GunieaPigExamples
 		var factory = new GuineaPig.Factory();
 		factory.Entities.RegisterFactoryFunction(
 			() => new Customer("Some Required Ctor Param"));
-		var customer = factory.CreateNew<Customer>();
+		var customer = factory.Create<Customer>();
 	}
 
 	public void CustomEntityUsingFactory()
@@ -62,7 +62,7 @@ public class GunieaPigExamples
 			f => f.Build(new Customer("Some Required Ctor Param"))
 				.FillUninitialisedValueObjects()
 				.Entity);
-		var customer = factory.CreateNew<Customer>();
+		var customer = factory.Create<Customer>();
 	}
 
 	public void CustomEntityWithFactoryFillSelectProperties()
@@ -75,7 +75,7 @@ public class GunieaPigExamples
 				.Fill(b => b.PublishedOn) // Populate value object using factory
 				.Set(b => b.ISBN = "12345678") // Explicitly set property
 				.Entity);
-		var book = factory.CreateNew<Book>();
+		var book = factory.Create<Book>();
 	}
 
 	public void FactoryMethodsContainedInAFactoryClass()
@@ -83,7 +83,7 @@ public class GunieaPigExamples
 		// Register many factory methods by grouping them in a class.
 		var factory = new GuineaPig.Factory();
 		factory.Entities.RegisterFactories(new EntityFactoryClass());
-		var book = factory.CreateNew<Book>();
+		var book = factory.Create<Book>();
 	}
 	public class EntityFactoryClass
 	{

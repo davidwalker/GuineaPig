@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="EntityFactoryFunctionCollection.cs" />
     <Compile Include="Factory.cs" />
-    <Compile Include="IEntityPopulator.cs" />
     <Compile Include="IValueObjectFactoryContainer.cs" />
     <Compile Include="IPropertySetter.cs" />
     <Compile Include="PopulationContext.cs" />
@@ -55,7 +54,6 @@
     <Compile Include="PropertyPropertySetter.cs" />
     <Compile Include="RandomPrimativeGenerator.cs" />
     <Compile Include="FixedValueFactoryContainer.cs" />
-    <Compile Include="EntityPopulator.cs" />
     <Compile Include="ValueObjectFactoryFunctionCollection.cs" />
     <Compile Include="UnrecognisedTypeException.cs" />
   </ItemGroup>

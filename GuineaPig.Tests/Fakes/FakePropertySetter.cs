@@ -19,9 +19,19 @@ namespace GuineaPig.Tests
 			get; set;
 		}
 
+		public bool HasPublicSetter
+		{
+			get; set;
+		}
+
 		public void SetValue(object instance, object value)
 		{
 			
+		}
+
+		public object GetValue(object instance)
+		{
+			return null;
 		}
 	}
 }

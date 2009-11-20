@@ -11,7 +11,7 @@ namespace GuineaPig.Tests
 		private void AssertPropertyIsDefault<T>(Func<TestEntity, T> propertyEvaluationFunction)
 		{
 			var factory = new Factory();
-			var entity = factory.CreateNew<TestEntity>();
+			var entity = factory.Create<TestEntity>();
 			var defaultValue = propertyEvaluationFunction(new TestEntity());
 			var actualValue = propertyEvaluationFunction(entity);
 			Assert.Equal(defaultValue, actualValue);

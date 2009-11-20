@@ -62,17 +62,5 @@ namespace GuineaPig
 			factoryFunction = null;
 			return false;
 		}
-
-		public bool TryGetFactoryFunction(Type type, out Func<Factory, object> factoryFunction)
-		{
-			MulticastDelegate func;
-			if (entityObjectConstructors.TryGetValue(type, out func))
-			{
-				factoryFunction = (f) => func.DynamicInvoke(f);
-				return true;
-			}
-			factoryFunction = null;
-			return false;
-		}
 	}
 }

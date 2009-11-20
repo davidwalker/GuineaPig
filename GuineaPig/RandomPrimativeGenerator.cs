@@ -30,8 +30,8 @@ namespace GuineaPig
 			factoryFunctionCollection.RegisterFactoryFunction(() => (decimal)rnd.NextDouble());
 			factoryFunctionCollection.RegisterFactoryFunction(() =>
 														{
-															const long minTicks = 599266080000000000;
-															const long maxTicks = 662380416000000000;
+															const long minTicks = 599266080000000000; // Equal to DateTime(1900, 01, 01);
+															const long maxTicks = 662380416000000000; // Equal to DateTime(2100, 01, 01);
 															const long range = maxTicks - minTicks;
 															const long multiplier = range / int.MaxValue;
 															return new DateTime((rnd.Next(int.MaxValue) * multiplier) + minTicks);

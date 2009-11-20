@@ -36,9 +36,54 @@ namespace GuineaPig.Tests
 			Assert.Equal("Test Value", entity.StringProperty);
 		}
 
+		[Fact]
+		public void HasPublicSetter_ShouldBeFalse_WhenSetterIsPrivate()
+		{
+			var setter = new PropertyPropertySetter(PrivateSetterProperty);
+
+			Assert.False(setter.HasPublicSetter);
+		}
+
+		[Fact]
+		public void HasPublicSetter_ShouldBeFalse_WhenThereIsNoSetter()
+		{
+			var setter = new PropertyPropertySetter(NoSetterProperty);
+
+			Assert.False(setter.HasPublicSetter);
+		}
+
+		[Fact]
+		public void HasPublicSetter_ShouldBeTrue_WhenSetterIsPublic()
+		{
+			var setter = new PropertyPropertySetter(StringProperty);
+
+			Assert.True(setter.HasPublicSetter);
+		}
+
+		[Fact]
+		public void GetValue_ShouldReturnValueOfProperty()
+		{
+			var expected = "Expected";
+			var entity = new SimpleTestEntity(){ StringProperty = expected};
+
+			var setter = new PropertyPropertySetter(StringProperty);
+
+			Assert.Equal(expected, setter.GetValue(entity));
+		}
+
 		private PropertyInfo StringProperty
 		{
 			get { return typeof(SimpleTestEntity).GetProperty("StringProperty"); }
+		}
+
+		private PropertyInfo PrivateSetterProperty
+		{
+			get { return typeof(EntityWithPrivateProperty).GetProperty("PrivateSetterProperty"); }
+		}
+
+		private PropertyInfo NoSetterProperty
+		{
+			get { return typeof(EntityWithPrivateProperty).GetProperty("NoSetterProperty"); }
 		}
 	}
 }

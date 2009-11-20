@@ -25,9 +25,22 @@ namespace GuineaPig
 			get { return property.Name; }
 		}
 
+		public bool HasPublicSetter
+		{
+			get
+			{
+				return property.GetSetMethod() != null;
+			}
+		}
+
 		public void SetValue(object instance, object value)
 		{
 			property.SetValue(instance, value, null);
+		}
+
+		public object GetValue(object instance)
+		{
+			return property.GetValue(instance, null);
 		}
 	}
 
@@ -50,9 +63,19 @@ namespace GuineaPig
 			get { return field.Name; }
 		}
 
+		public bool HasPublicSetter
+		{
+			get { return field.IsPublic; }
+		}
+
 		public void SetValue(object instance, object value)
 		{
 			field.SetValue(instance, value);
+		}
+
+		public object GetValue(object instance)
+		{
+			return field.GetValue(instance);
 		}
 	}
 }

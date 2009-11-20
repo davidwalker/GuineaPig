@@ -9,7 +9,6 @@ namespace GuineaPig
 	{
 		private const string NoParameterlessCtorMessage = "Unable to create instance of {0} because the requested type does not define a parameterless constructor and no custom factory method was registered.";
 
-		private IEntityPopulator populator;
 		public EntityFactoryFunctionCollection Entities { get; private set; }
 		public ValueObjectFactoryFunctionCollection ValueObjects { get; private set; }
 
@@ -17,22 +16,16 @@ namespace GuineaPig
 		{
 			Entities = new EntityFactoryFunctionCollection();
 			ValueObjects = ValueObjectFactoryFunctionCollection.CreateWithBasicTypeSupport();
-			populator = new EntityPopulator(ValueObjects);
 		}
 
-		public IEntityPopulator Populator
-		{
-			get { return populator; }
-		}
-
-		public T CreateNew<T>() where T : class
+		public T Create<T>() where T : class
 		{
 			return CreateWithRegisteredCtor<T>() ?? CreateDefault<T>();
 		}
 
-		public T CreateNew<T>(Action<T> callback) where T : class, new()
+		public T Create<T>(Action<T> callback) where T : class, new()
 		{
-			var instance = CreateNew<T>();
+			var instance = Create<T>();
 			if (callback != null)
 				callback(instance);
 			return instance;
@@ -51,7 +44,7 @@ namespace GuineaPig
 			try
 			{
 				var instance = (T)Activator.CreateInstance(typeof(T));
-				PopulateInstance(instance);
+				Build(instance).FillUninitialisedValueObjects();
 				return instance;
 			}
 			catch (MissingMethodException e)
@@ -61,11 +54,6 @@ namespace GuineaPig
 								typeof(T).FullName);
 				throw new MissingMethodException(message, e);
 			}
-		}
-
-		private void PopulateInstance<T>(T instance)
-		{
-			populator.PopulateInstance(instance);
 		}
 
 		public PopulationContext<T> Build<T>(T entity)
